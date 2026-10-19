@@ -2,20 +2,20 @@ data "aws_iam_policy_document" "oidc_assume_role" {
   statement {
     effect = "Allow"
     principals {
-      type = "Federated"
+      type        = "Federated"
       identifiers = [var.github_oidc_provider_arn]
     }
     actions = ["sts:AssumeRoleWithWebIdentity"]
     condition {
-      test = "StringLike"
+      test     = "StringLike"
       variable = "token.actions.githubusercontent.com:sub"
-      values = ["repo:${var.github_repo}:ref:refs/heads/${var.github_deploy_branch}"]
+      values   = ["repo:${var.github_repo}:ref:refs/heads/${var.github_deploy_branch}"]
     }
   }
 }
 
 resource "aws_iam_role" "github_actions_role" {
-  name = "${var.name_prefix}-gh-actions-${var.environment}"
+  name               = "${var.name_prefix}-gh-actions-${var.environment}"
   assume_role_policy = data.aws_iam_policy_document.oidc_assume_role.json
 }
 
